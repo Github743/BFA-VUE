@@ -1,4 +1,4 @@
-# bs-admin-vue
+# bfa-vue
 
 ## Project setup
 ```
