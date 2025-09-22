@@ -4,14 +4,14 @@
       <div class="col-sm-6"></div>
       <div class="col-sm-6 text-end">
         <button
-          v-if="stepName === 'Options'"
+          v-if="!readOnly && stepName === 'Options'"
           class="btn btn-outline-secondary me-2"
           @click="$emit('save')"
         >
           Save
         </button>
         <button
-          v-if="buttonLabel"
+          v-if="!readOnly && buttonLabel"
           class="btn btn-primary"
           @click="$emit('next')"
         >
@@ -30,6 +30,7 @@ export default {
       type: String,
       required: true,
     },
+    readOnly: { type: Boolean, default: false },
   },
   computed: {
     buttonLabel() {

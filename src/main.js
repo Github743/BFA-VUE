@@ -1,6 +1,6 @@
-import { createApp } from 'vue'
+import { createApp } from "vue";
 import { createPinia } from "pinia";
-import App from '@/App.vue'
+import App from "@/App.vue";
 import router from "@/router";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
@@ -11,6 +11,8 @@ import BootstrapVueNext from "bootstrap-vue-next";
 import "bootstrap-vue-next/dist/bootstrap-vue-next.css";
 
 import "bootstrap-icons/font/bootstrap-icons.css";
+
+import "flatpickr/dist/flatpickr.css";
 
 const app = createApp(App);
 

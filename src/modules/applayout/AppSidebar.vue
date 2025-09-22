@@ -3,6 +3,14 @@
     class="sidebar bg-white shadow-sm d-flex flex-column"
     :class="{ collapsed: isCollapsed }"
   >
+  <ul class="nav flex-column mt-3">
+  <li>
+    <RouterLink to="/workorders/search" class="nav-link d-flex align-items-center">
+      <i class="bi bi-search me-2"></i>
+      Work Order Search
+    </RouterLink>
+  </li>
+</ul>
     <ul class="nav flex-column mt-3">
       <li>
         <!-- Toggle -->

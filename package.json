@@ -14,9 +14,12 @@
     "bootstrap-icons": "^1.13.1",
     "bootstrap-vue-next": "^0.30.5",
     "core-js": "^3.8.3",
+    "flatpickr": "^4.6.13",
+    "moment": "^2.30.1",
     "pinia": "^3.0.3",
     "pinia-plugin-persistedstate": "^4.5.0",
     "vue": "^3.2.13",
+    "vue-flatpickr-component": "^12.0.0",
     "vue-router": "^4.5.1"
   },
   "devDependencies": {

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import CustomerLayout from "@/modules/customer/CustomerLayout.vue";
-import BfaLayout from "@/modules/bfa/pages/BfaLayout.vue"
+import WorkOrderSearch from "@/modules/workorder/WorkOrderSearch.vue";
+
 const routes = [
    {
     path: "/agreements/issue",
@@ -24,11 +25,17 @@ const routes = [
     props: { nextLayout: "bfa" }
   },
   {
-    path: "/agreements/bfa/:clientId",
-    name: "BfaLayout",
-    component: BfaLayout,
-    props: true
-  },
+  path: "/agreements/:step/:workOrderId",
+  name: "BfaStepper",
+  component: () => import("@/modules/bfa/pages/BfaLayout.vue"),
+  props: true
+},
+  {
+    path: "/workorders/search",
+    name: "WorkOrderSearch",
+    component: WorkOrderSearch,
+    meta: { title: "Work Order Search" },
+  }
   
 ];
 

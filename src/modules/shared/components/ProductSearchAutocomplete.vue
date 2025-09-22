@@ -1,11 +1,9 @@
 <template>
   <div class="d-flex flex-column align-items-center justify-content-center">
     <h4 class="text-danger fw-bold mb-3">{{ $route.meta.title }}</h4>
-    <h5 class="text-primary mb-4">Search for a Client Name or Number below.</h5>
-
     <div
       ref="root"
-      class="client-search position-relative w-100"
+      class="product-search position-relative w-100"
       style="max-width: 500px"
     >
       <!-- Search Bar -->
@@ -31,37 +29,35 @@
 
       <!-- Dropdown -->
       <ul
-  v-if="showDropdown && searchQuery.length >= 3"
-  class="list-group position-absolute w-100 mt-1 dropdown-list"
->
-  <template v-if="clients && clients.length > 0">
-    <li
-      v-for="client in clients"
-      :key="client.clientId"
-      class="list-group-item list-group-item-action"
-      @click="selectClient(client)"
-    >
-      <strong>{{ client.clientNumber }}</strong> - {{ client.clientName }}
-    </li>
-  </template>
+        v-if="showDropdown && searchQuery.length >= 3"
+        class="list-group position-absolute w-100 mt-1 dropdown-list"
+      >
+        <template v-if="products && products.length > 0">
+          <li
+            v-for="product in products"
+            :key="product.SytemProductName"
+            class="list-group-item list-group-item-action"
+            @click="selectProduct(product)"
+          >
+            <strong> {{ product.sytemProductName }}</strong>
+          </li>
+        </template>
 
-  <template v-else>
-    <li class="list-group-item text-muted text-center">
-      No results found
-    </li>
-  </template>
-</ul>
-
+        <template v-else>
+          <li class="list-group-item text-muted text-center">
+            No results found
+          </li>
+        </template>
+      </ul>
     </div>
   </div>
 </template>
 
 <script>
-
 export default {
-  name: "ClientSearchAutocomplete",
+  name: "ProductSearchAutocomplete",
   props: {
-    clients: {
+    products: {
       type: Array,
       default: () => [],
     },
@@ -74,7 +70,7 @@ export default {
   data() {
     return {
       searchQuery: "",
-      selectedClient: null,
+      selectedProduct: null,
       showDropdown: false,
       timer: null,
     };
@@ -99,16 +95,16 @@ export default {
       }
     },
 
-    selectClient(client) {
-      this.searchQuery = `${client.clientNumber} - ${client.clientName}`;
-      this.selectedClient = client;
+    selectProduct(product) {
+      this.searchQuery = `${product.SytemProductName}`;
+      this.selectedProduct = product;
       this.showDropdown = false;
-      this.$emit("select", client);
+      this.$emit("select", product);
     },
 
     startSearch() {
-      if (this.selectedClient) {
-        this.$emit("start", this.selectedClient);
+      if (this.selectedproduct) {
+        this.$emit("start", this.selectedproduct);
       }
     },
 
@@ -129,15 +125,18 @@ export default {
 </script>
 
 <style scoped>
-.client-search {
+.product-search {
   position: relative;
-  max-width: 500px;
+  max-width: 700px;
 }
 .list-group-item.text-muted.text-center {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 48px;
+}
+.product-search .dropdown-list.w-100 {
+  min-width: 100%;
 }
 .dropdown-list {
   max-height: 250px;

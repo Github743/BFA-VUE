@@ -1,20 +1,3 @@
-<!-- <template>
-  <div class="app-layout">
-    <Topbar />
-
-    <div class="main-body">
-      <Sidebar :is-collapsed="isCollapsed" @toggle="toggleSidebar" />
-      <main class="content" :class="{ collapsed: isCollapsed }">
-        <div class="content-inner">
-          <RouterView />
-        </div>
-      </main>
-    </div>
-
-    <AppFooter />
-  </div>
-</template> -->
-
 <template>
   <div class="app-layout d-flex flex-column">
     <Topbar @toggleSidebar="toggleSidebar" />
@@ -23,12 +6,19 @@
       <Sidebar :is-collapsed="isCollapsed" />
       <main class="content flex-grow-1" :class="{ collapsed: isCollapsed }">
         <div class="content-inner">
-          <RouterView />
+          <RouterView :key="$route.fullPath" />
         </div>
       </main>
     </div>
 
     <AppFooter :is-collapsed="isCollapsed" />
+
+    <div
+      class="toast-container position-fixed top-0 end-0 p-3"
+      id="toast-container"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
   </div>
 </template>
 
@@ -71,5 +61,6 @@ const toggleSidebar = () => {
 
 .content-inner {
   padding: 1rem;
+  margin-top: -4%;
 }
 </style>
