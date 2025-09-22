@@ -28,6 +28,7 @@
       :readonly="readOnly"
       :show-actions="true"
       @edit="onEdit"
+      @delete="onDelete"
     >
       <template #amount="{ row }">{{ formatMoney(row.amount) }}</template>
     </BaseTable>
@@ -55,6 +56,8 @@ import AdditionalDiscountModal from "@/modules/shared/components/ClientAgreement
 import ProductsService from "@/modules/shared/services/Products.js";
 import LoadingOverlay from "@/modules/shared/components/LoadingOverlay.vue";
 import EditAdditionalDiscountModal from "@/modules/shared/components/ClientAgreement/EditAdditionalProductModal.vue";
+import confirmDialog from "@/modules/shared/utils/confirm.js";
+import { showToast } from "@/modules/shared/utils/toast.js";
 
 export default {
   name: "AdditionalDiscount",
@@ -89,7 +92,12 @@ export default {
         },
         { label: "Limit", field: "limitPerYear" },
         { label: "Added By", field: "createdBy" },
-        { label: "Date", field: "creationDate", type: "date" },
+        {
+          label: "Date",
+          field: "creationDate",
+          type: "date",
+          width: "114px",
+        },
       ],
     };
   },
@@ -130,6 +138,68 @@ export default {
       } catch (err) {
         console.error("Failed to load discount types:", err);
         this.discountTypes = [];
+      }
+    },
+
+    async onDelete({ row } = {}) {
+      const confirmed = await confirmDialog({
+        title: "Delete product discount",
+        message: `Are you sure you want to delete the discount for <strong>${row.systemProductName}</strong>? This action cannot be undone.`,
+        confirmText: "Delete",
+        cancelText: "Cancel",
+        confirmClass: "btn-danger",
+      });
+
+      if (!confirmed) return;
+
+      try {
+        this.loadProducts = true;
+        const id = row.workOrderClientAgreementEntityProductId;
+        if (await ProductsService.deleteEntityProduct(Number(id))) {
+          showToast(
+            "Deleted the selected product " + row.systemProductName,
+            "success"
+          );
+        } else {
+          showToast("Failed to delete product. Please try again.", "danger");
+        }
+      } catch (err) {
+        showToast("Failed to delete product. Please try again.", "danger");
+      } finally {
+        this.loadProducts = false;
+        this.fetchEntityProducts(Number(this.$route?.params?.workOrderId));
+      }
+    },
+
+    async onEditSaved({ row, index }) {
+      if (index == null || index < 0) return;
+      const existing = this.additionalDiscountedProducts[index] || {};
+      const updated = { ...existing, ...row };
+
+      // update UI fields (discount type label)
+      const dtMatch = this.discountTypes.find(
+        (dt) => dt.code === updated.discountType
+      );
+      if (dtMatch) updated.discountTypeName = dtMatch.name;
+
+      // Optimistically update UI so user sees it immediately
+      this.$set
+        ? this.$set(this.additionalDiscountedProducts, index, updated)
+        : this.additionalDiscountedProducts.splice(index, 1, updated);
+
+      this.$emit("update:products", [...this.additionalDiscountedProducts]);
+      console.log(updated);
+
+      try {
+        this.loadProducts = true;
+        await ProductsService.updateEntityProduct(updated);
+
+        this.fetchEntityProducts(Number(this.$route?.params?.workOrderId));
+      } catch (err) {
+        //this.fetchEntityProducts(Number(this.$route?.params?.workOrderId));
+        // optionally show error toast
+      } finally {
+        this.loadProducts = false;
       }
     },
 

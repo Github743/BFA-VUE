@@ -1,10 +1,10 @@
 <template>
-  <div class="d-flex flex-column align-items-center justify-content-center">
+  <div class="d-flex flex-column">
     <h4 class="text-danger fw-bold mb-3">{{ $route.meta.title }}</h4>
     <div
       ref="root"
       class="product-search position-relative w-100"
-      style="max-width: 500px"
+      style="max-width: 600px"
     >
       <!-- Search Bar -->
       <div class="input-group">
@@ -77,7 +77,7 @@ export default {
   },
   methods: {
     onInput() {
-      this.selectedClient = null;
+      this.selectedProduct = null;
       this.showDropdown = true;
 
       if (this.timer) clearTimeout(this.timer);
@@ -96,7 +96,7 @@ export default {
     },
 
     selectProduct(product) {
-      this.searchQuery = `${product.SytemProductName}`;
+      this.searchQuery = `${product.sytemProductName}`;
       this.selectedProduct = product;
       this.showDropdown = false;
       this.$emit("select", product);

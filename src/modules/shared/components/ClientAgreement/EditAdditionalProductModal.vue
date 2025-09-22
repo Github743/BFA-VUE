@@ -230,7 +230,6 @@ export default {
     validate() {
       this.resetErrors();
       let ok = true;
-      alert(this.form.discountType);
       if (!this.form.discountType) {
         this.errors.discountType = "Discount type is required.";
         ok = false;

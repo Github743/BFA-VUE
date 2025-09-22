@@ -74,7 +74,6 @@
               </div>
             </slot>
           </td>
-          https://github.com/Github743/BFA-VUE
 
           <!-- Optionally render hidden columns -->
           <td

@@ -63,7 +63,7 @@
           <div v-else>
             <label class="form-label fw-bold">Select Product</label>
 
-            <div class="input-group mb-2">
+            <div class="mb-2">
               <ProductSearchAutocomplete
                 v-show="!selectedProduct"
                 :products="products"
