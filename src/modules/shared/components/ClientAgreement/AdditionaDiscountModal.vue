@@ -100,6 +100,7 @@
 <script>
 import ProductsService from "@/modules/shared/services/Products.js";
 import ProductSearchAutocomplete from "@/modules/shared/components/ProductSearchAutocomplete.vue";
+import { useBfaStore } from "@/modules/bfa/pages/bfaStore";
 
 export default {
   name: "AdditionalDiscountModal",
@@ -235,8 +236,15 @@ export default {
       // your ProductSearchAutocomplete uses v-show="!selectedProduct" so it hides automatically
     },
 
-    onSave() {
+    async onSave() {
       if (this.mode === "service") {
+        const bfaStore = useBfaStore();
+        const payload = {
+          ProductGroupTypeId: this.selectedService.LookupId,
+          WorkOrderClientAgreementId: bfaStore.workOrderClientAgreementId,
+        };
+        await ProductsService.saveAdditionalProduct(payload);
+        console.log(this.selectedService.LookupId);
         this.$emit("saved", { type: "service", item: this.selectedService });
       } else {
         this.$emit("saved", { type: "product", item: this.selectedProduct });

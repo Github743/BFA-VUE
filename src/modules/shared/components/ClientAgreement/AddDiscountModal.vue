@@ -256,7 +256,8 @@ export default {
 
         const result = await ProductsService.saveEntityProducts(
           payload,
-          workOrderId
+          workOrderId,
+          this.selectedScheduleId
         );
         if (result === true) {
           // emit for parent(s)

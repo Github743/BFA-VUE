@@ -31,10 +31,10 @@ const ProductsService = {
     });
   },
 
-  saveEntityProducts: async (items, workOrderId) => {
+  saveEntityProducts: async (items, workOrderId, systemDiscountScheduleId) => {
     const url = "/SaveEntityProducts";
     const config = {
-      params: { workOrderId },
+      params: { workOrderId, systemDiscountScheduleId },
     };
     const response = await post(url, items, config);
     return response;
@@ -49,6 +49,18 @@ const ProductsService = {
   deleteEntityProduct: async (workOrderClientAgreementEntityProductId) => {
     const url = "/RemoveEntity";
     const response = await post(url, workOrderClientAgreementEntityProductId);
+    return response;
+  },
+
+  deleteAll: async (ids) => {
+    const url = "/RemoveEntities";
+    const response = await post(url, ids);
+    return response;
+  },
+
+  saveAdditionalProduct: async (item) => {
+    const url = "/SaveProduct";
+    const response = await post(url, item);
     return response;
   },
 };

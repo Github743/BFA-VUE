@@ -29,9 +29,17 @@
       :show-actions="true"
       @edit="onEdit"
       @delete="onDelete"
+      :enableBulkDelete="true"
+      :idAccessor="(row) => row.workOrderClientAgreementEntityProductId"
+      @selection-change="onSelectionChange"
+      @bulk-delete="deleteSchedules"
     >
       <template #amount="{ row }">{{ formatMoney(row.amount) }}</template>
     </BaseTable>
+
+    <div class="mt-2 text-muted small text-end">
+      Total Additional Discounts : {{ total }}
+    </div>
 
     <AdditionalDiscountModal
       ref="additionalDiscountModal"
@@ -71,7 +79,7 @@ export default {
   props: {
     readOnly: { type: Boolean, default: false },
     saveOption: { type: Boolean, default: false },
-    title: { type: String, default: "Discount Schedules" },
+    title: { type: String, default: "" },
   },
 
   data() {
@@ -80,6 +88,11 @@ export default {
       loadProducts: false,
       discountTypes: [],
       columns: [
+        {
+          label: "WorkOrderClientAgreementEntityProductId",
+          field: "workOrderClientAgreementEntityProductId",
+          hidden: true,
+        },
         { label: "Product", field: "systemProductName" },
         { label: "Product Code", field: "productCode", width: "100px" },
         { label: "Discount", field: "amount" },
@@ -99,6 +112,10 @@ export default {
           width: "114px",
         },
       ],
+      selectedCount: 0,
+      lastSelectedIds: [],
+      deleting: false,
+      total: 0,
     };
   },
 
@@ -106,7 +123,7 @@ export default {
     const workOrderId = Number(
       this.$route?.params?.workOrderId || this.$route?.query?.workOrderId || 0
     );
-    if (workOrderId) await this.fetchEntityProducts(workOrderId);
+    if (workOrderId) await this.fetchAdditionalDiscountedProducts(workOrderId);
     await this.loadDiscountTypes();
   },
 
@@ -167,7 +184,92 @@ export default {
         showToast("Failed to delete product. Please try again.", "danger");
       } finally {
         this.loadProducts = false;
-        this.fetchEntityProducts(Number(this.$route?.params?.workOrderId));
+        this.fetchAdditionalDiscountedProducts(
+          Number(this.$route?.params?.workOrderId)
+        );
+      }
+    },
+
+    /**
+     * Called by BaseTable when selection changes.
+     * selectedIds is expected to be an array of ids (strings) from BaseTable.
+     */
+    onSelectionChange(selectedIds) {
+      this.lastSelectedIds = Array.isArray(selectedIds) ? [...selectedIds] : [];
+      this.selectedCount = this.lastSelectedIds.length;
+      alert(this.selectedIds);
+    },
+
+    /**
+     * Called when user clicks the top-level "Delete (N)" button.
+     * Uses lastSelectedIds stored by onSelectionChange.
+     */
+    async deleteSelected() {
+      if (!this.lastSelectedIds || this.lastSelectedIds.length === 0) return;
+      const csv = this.lastSelectedIds.join(",");
+      await this.deleteSchedules(csv);
+    },
+
+    /**
+     * deleteSchedules accepts either:
+     *  - a CSV string of ids, or
+     *  - an array of ids (from BaseTable's bulk-delete)
+     *
+     * It will normalize and call ProductsService.deleteAll(...)
+     */
+    async deleteSchedules(ids) {
+      // normalize incoming ids into an array
+      let idArray = [];
+
+      if (Array.isArray(ids)) {
+        idArray = [...ids];
+      } else if (typeof ids === "string" && ids.trim() !== "") {
+        // CSV string fallback
+        idArray = ids.split(",").map((s) => s.trim());
+      } else {
+        // nothing to delete
+        return;
+      }
+
+      // convert to numbers, filter out invalids
+      const numericIds = idArray
+        .map((v) => {
+          // accept either "123" or number 123
+          const n = Number(v);
+          return Number.isFinite(n) && n > 0 ? Math.trunc(n) : null;
+        })
+        .filter((n) => n !== null);
+
+      if (!numericIds.length) return;
+
+      try {
+        this.loadProducts = true;
+        this.deleting = true;
+
+        // IMPORTANT: call API with an array of integers (JSON array)
+        // Make sure ProductsService.deleteAll sends the array as JSON body or the way your backend expects it.
+        const res = await ProductsService.deleteAll(numericIds);
+
+        if (res) {
+          showToast("Deleted selected products.", "success");
+        } else {
+          showToast("Failed to delete selected products.", "danger");
+        }
+      } catch (err) {
+        console.error("deleteSchedules error:", err);
+        showToast("Failed to delete selected products.", "danger");
+      } finally {
+        this.deleting = false;
+        this.loadProducts = false;
+
+        // reset local selection state
+        this.lastSelectedIds = [];
+        this.selectedCount = 0;
+
+        // refresh list
+        this.fetchAdditionalDiscountedProducts(
+          Number(this.$route?.params?.workOrderId)
+        );
       }
     },
 
@@ -194,9 +296,11 @@ export default {
         this.loadProducts = true;
         await ProductsService.updateEntityProduct(updated);
 
-        this.fetchEntityProducts(Number(this.$route?.params?.workOrderId));
+        this.fetchAdditionalDiscountedProducts(
+          Number(this.$route?.params?.workOrderId)
+        );
       } catch (err) {
-        //this.fetchEntityProducts(Number(this.$route?.params?.workOrderId));
+        //this.fetchAdditionalDiscountedProducts(Number(this.$route?.params?.workOrderId));
         // optionally show error toast
       } finally {
         this.loadProducts = false;
@@ -220,7 +324,7 @@ export default {
       }
     },
 
-    async fetchEntityProducts(workOrderId) {
+    async fetchAdditionalDiscountedProducts(workOrderId) {
       if (!workOrderId) return;
       this.loadProducts = true;
       try {
@@ -233,6 +337,7 @@ export default {
           : entities?.items ?? entities?.data ?? [];
 
         this.additionalDiscountedProducts = list.map((e) => ({ ...e }));
+        this.total = this.additionalDiscountedProducts.length;
       } catch (err) {
         console.error("Failed to load entity products:", err);
       } finally {
@@ -247,7 +352,7 @@ export default {
       );
       if (!workOrderId)
         return console.warn("No workOrderId to refresh products.");
-      await this.fetchEntityProducts(workOrderId);
+      await this.fetchAdditionalDiscountedProducts(workOrderId);
     },
 
     formatMoney(n) {

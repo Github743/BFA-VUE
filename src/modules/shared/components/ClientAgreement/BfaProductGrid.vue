@@ -1,9 +1,27 @@
 <template>
   <div class="card p-3 shadow-sm mb-4">
     <div class="d-flex justify-content-between align-items-center mb-2">
-      <h6 class="mb-0">{{ title }}</h6>
+      <h6 class="mb-0">{{ localTitle }}</h6>
 
       <div>
+        <div class="d-flex gap-2">
+          <!-- Bulk delete button shown only when 2+ selected -->
+          <button
+            v-if="selectedCount >= 2"
+            class="btn btn-danger"
+            @click="deleteSelected"
+            :disabled="deleting"
+            title="Delete selected discount schedules"
+          >
+            <span
+              v-if="deleting"
+              class="spinner-border spinner-border-sm"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            Delete ({{ selectedCount }})
+          </button>
+        </div>
         <button
           v-if="!readOnly"
           class="btn btn-sm btn-primary"
@@ -30,14 +48,23 @@
       :actions-width="'120px'"
       @edit="onEdit"
       @delete="onDelete"
+      :enableBulkDelete="true"
+      :idAccessor="(row) => row.workOrderClientAgreementEntityProductId"
+      @selection-change="onSelectionChange"
+      @bulk-delete="deleteSchedules"
     >
       <template #amount="{ row }">{{ formatMoney(row.amount) }}</template>
     </BaseTable>
+
+    <div class="mt-2 text-muted small text-end">
+      Total Products : {{ total }}
+    </div>
 
     <AddDiscountModal
       ref="addDiscountModal"
       :read-only="readOnly"
       @saved="onModalSaved"
+      @apply-discount-schedule="onApplyDiscountSchedule"
     />
     <LoadingOverlay :visible="loadProducts" />
 
@@ -58,6 +85,7 @@ import EditProductModal from "@/modules/shared/components/ClientAgreement/EditPr
 import ProductsService from "@/modules/shared/services/Products.js";
 import confirmDialog from "@/modules/shared/utils/confirm.js";
 import { showToast } from "@/modules/shared/utils/toast.js";
+import { get } from "@/modules/shared/api/http";
 
 export default {
   name: "BfaProductGrid",
@@ -65,13 +93,20 @@ export default {
   props: {
     readOnly: { type: Boolean, default: false },
     saveOption: { type: Boolean, default: false },
-    title: { type: String, default: "Discount Schedules" },
+    title: { type: String, default: "" },
   },
   data() {
     return {
       clientAgreementEntityProducts: [],
       loadProducts: false,
       discountTypes: [],
+      localTitle: this.title || "",
+
+      selectedCount: 0,
+      lastSelectedIds: [],
+      deleting: false,
+      total: 0,
+
       columns: [
         {
           label: "WorkOrderClientAgreementEntityProductId",
@@ -88,10 +123,35 @@ export default {
     const workOrderId = Number(
       this.$route?.params?.workOrderId || this.$route?.query?.workOrderId || 0
     );
+
+    try {
+      if (workOrderId) {
+        const clientAgreement = await get(`ClientAgreement/${workOrderId}`);
+        // guard and fallback
+        this.localTitle =
+          clientAgreement?.systemDiscountScheduleName || this.title;
+      } else {
+        // no workOrderId -> use prop title
+        this.localTitle = this.title;
+      }
+    } catch (err) {
+      console.error("Failed to load client agreement title:", err);
+      this.localTitle = this.title;
+    }
+
     if (workOrderId) await this.fetchEntityProducts(workOrderId);
     await this.loadDiscountTypes();
   },
   methods: {
+    /**
+     * Called by BaseTable when selection changes.
+     * selectedIds is expected to be an array of ids (strings) from BaseTable.
+     */
+    onSelectionChange(selectedIds) {
+      this.lastSelectedIds = Array.isArray(selectedIds) ? [...selectedIds] : [];
+      this.selectedCount = this.lastSelectedIds.length;
+    },
+
     openDiscountModal() {
       if (this.readOnly) return;
       const modalEl =
@@ -139,7 +199,7 @@ export default {
           systemProductId: e.systemProductId,
           defaultOrder: e.defaultOrder,
         }));
-
+        this.total = this.clientAgreementEntityProducts.length;
         this.$emit("update:products", [...this.clientAgreementEntityProducts]);
       } catch (err) {
         console.error("Failed to load entity products:", err);
@@ -202,6 +262,7 @@ export default {
         this.loadProducts = false;
       }
     },
+
     async onDelete({ row } = {}) {
       const confirmed = await confirmDialog({
         title: "Delete product discount",
@@ -232,12 +293,124 @@ export default {
       }
     },
 
+    /**
+     * Called when user clicks the top-level "Delete (N)" button.
+     * Uses lastSelectedIds stored by onSelectionChange.
+     */
+    async deleteSelected() {
+      if (!this.lastSelectedIds || this.lastSelectedIds.length === 0) return;
+      const csv = this.lastSelectedIds.join(",");
+      await this.deleteSchedules(csv);
+    },
+
+    /**
+     * deleteSchedules accepts either:
+     *  - a CSV string of ids, or
+     *  - an array of ids (from BaseTable's bulk-delete)
+     *
+     * It will normalize and call ProductsService.deleteAll(...)
+     */
+    async deleteSchedules(ids) {
+      // normalize incoming ids into an array
+      let idArray = [];
+
+      if (Array.isArray(ids)) {
+        idArray = [...ids];
+      } else if (typeof ids === "string" && ids.trim() !== "") {
+        // CSV string fallback
+        idArray = ids.split(",").map((s) => s.trim());
+      } else {
+        // nothing to delete
+        return;
+      }
+
+      // convert to numbers, filter out invalids
+      const numericIds = idArray
+        .map((v) => {
+          // accept either "123" or number 123
+          const n = Number(v);
+          return Number.isFinite(n) && n > 0 ? Math.trunc(n) : null;
+        })
+        .filter((n) => n !== null);
+
+      if (!numericIds.length) return;
+
+      try {
+        this.loadProducts = true;
+        this.deleting = true;
+
+        // IMPORTANT: call API with an array of integers (JSON array)
+        // Make sure ProductsService.deleteAll sends the array as JSON body or the way your backend expects it.
+        const res = await ProductsService.deleteAll(numericIds);
+
+        if (res) {
+          showToast("Deleted selected products.", "success");
+        } else {
+          showToast("Failed to delete selected products.", "danger");
+        }
+      } catch (err) {
+        console.error("deleteSchedules error:", err);
+        showToast("Failed to delete selected products.", "danger");
+      } finally {
+        this.deleting = false;
+        this.loadProducts = false;
+
+        // reset local selection state
+        this.lastSelectedIds = [];
+        this.selectedCount = 0;
+
+        // refresh list
+        this.fetchEntityProducts(Number(this.$route?.params?.workOrderId));
+      }
+    },
+
     async onModalSaved() {
       const workOrderId = Number(
         this.$route?.params?.workOrderId || this.$route?.query?.workOrderId || 0
       );
       if (!workOrderId) return;
       await this.fetchEntityProducts(workOrderId);
+      // if you want to always refresh title from server, call refreshTitle()
+      // await this.refreshTitle();
+    },
+
+    async onApplyDiscountSchedule(payload) {
+      try {
+        if (payload && payload.schedule) {
+          const schedule = payload.schedule;
+          const name =
+            schedule.systemDiscountScheduleName || schedule.name || null;
+          if (name) {
+            this.localTitle = name;
+            const workOrderId = Number(
+              this.$route?.params?.workOrderId ||
+                this.$route?.query?.workOrderId ||
+                0
+            );
+            if (workOrderId) await this.fetchEntityProducts(workOrderId);
+            return;
+          }
+        }
+        await this.refreshTitle();
+      } catch (err) {
+        console.error("onApplyDiscountSchedule error:", err);
+      }
+    },
+
+    async refreshTitle() {
+      try {
+        const workOrderId = Number(
+          this.$route?.params?.workOrderId ||
+            this.$route?.query?.workOrderId ||
+            0
+        );
+        if (!workOrderId) return;
+        const clientAgreement = await get(`ClientAgreement/${workOrderId}`);
+        this.localTitle =
+          clientAgreement?.systemDiscountScheduleName || this.title;
+      } catch (err) {
+        console.error("Failed to refresh title:", err);
+      }
     },
   },
 };

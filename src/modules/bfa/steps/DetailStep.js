@@ -1,9 +1,12 @@
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { get } from "@/modules/shared/api/http";
+import { useBfaStore } from "@/modules/bfa/pages/bfaStore";
 
 export function useDetailStep() {
   const route = useRoute();
+
+  const bfaStore = useBfaStore();
 
   // state
   const activeTab = ref("products");
@@ -31,11 +34,13 @@ export function useDetailStep() {
     }
     try {
       const clientAgreement = await get(`ClientAgreement/${id}`);
+      bfaStore.setSystemDiscountScheduleName(
+        clientAgreement.systemDiscountScheduleName
+      );
       showAdditionalTab.value = Boolean(
         clientAgreement?.hasAdditionalDiscounts
       );
     } catch (err) {
-      console.error("Failed to fetch workorder meta:", err);
       showAdditionalTab.value = false;
     }
   }
@@ -68,7 +73,6 @@ export function useDetailStep() {
       const v = await get(`workorder/${workOrderId.value}/vessels`);
       vessels.value = Array.isArray(v) ? v : [];
     } catch (err) {
-      console.error("Failed to load vessels:", err);
       vesselsError.value = err?.message || "Failed to load vessels";
     } finally {
       loadingVessels.value = false;

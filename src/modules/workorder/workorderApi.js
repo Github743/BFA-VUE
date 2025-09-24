@@ -14,15 +14,11 @@ export async function createWorkOrder(payload) {
 
 export async function searchWorkOrders(payload) {
   try {
-    console.log("searchWorkOrders payload:", payload);
-
     const url = "https://archerfish-dev.liscr.com/bfa/api/searchwo";
 
     const res = await axios.post(url, payload, {
       headers: { "Content-Type": "application/json" },
     });
-
-    console.log("searchWorkOrders response:", res.status, res.data);
     return res.data;
   } catch (err) {
     if (err?.response) {

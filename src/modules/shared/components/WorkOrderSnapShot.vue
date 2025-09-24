@@ -7,7 +7,7 @@
         <strong>Work Order {{ workOrder.workOrderId }}</strong
         >:
         {{ workOrder.workOrderName }}
-        <span> - {{ workOrder.detail }} </span>
+        <span v-if="workOrder.detail"> - {{ workOrder.detail }} </span>
       </div>
       <div class="col-12 col-lg-3 text-lg-end text-start strong">
         <!-- text-start on small, text-end on large -->

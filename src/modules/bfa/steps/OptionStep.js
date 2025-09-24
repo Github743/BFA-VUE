@@ -1,6 +1,7 @@
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { showToast } from "@/modules/shared/utils/toast.js";
+import { useBfaStore } from "@/modules/bfa/pages/bfaStore";
 import {
   getOptionsForWorkOrder,
   mapApiToCertificateTypes,
@@ -13,6 +14,7 @@ export function useOptionStep(emit) {
   const route = useRoute();
   const router = useRouter();
   const clientStore = useClientStore();
+  const bfaStore = useBfaStore();
 
   // reactive state
   const certificateTypes = ref([]);
@@ -37,6 +39,9 @@ export function useOptionStep(emit) {
         certificateTypes.value = mapApiToCertificateTypes(res);
         hasAdditionalDiscounts.value = !!res.hasAdditionalDiscounts;
         agreementText.value = res.agreementText || "";
+        bfaStore.setSystemDiscountScheduleName(res.systemDiscountScheduleName);
+        bfaStore.setWorkOrderClientAgreementId(res.workOrderClientAgreementId);
+        console.log(res.systemDiscountScheduleName);
       }
     } catch (err) {
       showToast("Invalid workorder id", "danger");
