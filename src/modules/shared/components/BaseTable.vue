@@ -21,7 +21,10 @@
       <thead class="table-light">
         <tr>
           <!-- checkbox column -->
-          <th v-if="enableBulkDelete" style="width: 40px; text-align: center">
+          <th
+            v-if="enableBulkDelete && !readonly"
+            style="width: 40px; text-align: center"
+          >
             <input
               type="checkbox"
               :checked="allSelected"
@@ -68,7 +71,7 @@
           v-bind="rowDataAttributes(row)"
         >
           <!-- row checkbox -->
-          <td v-if="enableBulkDelete" class="text-center">
+          <td v-if="enableBulkDelete && !readonly" class="text-center">
             <input
               type="checkbox"
               :value="getRowId(row, rowIndex)"
@@ -219,9 +222,8 @@ export default {
     },
 
     onDelete(row, rowIndex) {
-      const payload = this.idAccessor
-        ? this.idAccessor(row)
-        : { row, rowIndex };
+      const id = this.getRowId(row, rowIndex);
+      const payload = { id, row, rowIndex };
       this.$emit("delete", payload);
     },
 

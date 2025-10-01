@@ -309,8 +309,15 @@ export default {
 
     // Called when user clicks Edit action in BaseTable
     onEdit({ row, rowIndex } = {}) {
-      if (this.readOnly) return;
-      if (!row) return console.warn("Edit: no row provided");
+      const idx = Number.isFinite(rowIndex)
+        ? rowIndex
+        : this.additionalDiscountedProducts.findIndex(
+            (r) => r === row || r.id === (row && row.id)
+          );
+      if (idx === -1) {
+        console.warn("Edit: row index not found", { row, rowIndex });
+        return;
+      }
 
       // ensure discount types are loaded by the modal (modal will load if needed)
       // show the edit modal and pass the row to pre-fill the form

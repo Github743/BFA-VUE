@@ -2,7 +2,10 @@ import axios from "axios";
 
 // Create axios instance with a base URL
 const api = axios.create({
-  baseURL: "https://localhost:7020/api",
+  baseURL:
+    process.env.NODE_ENV === "production"
+      ? "https://archerfish-dev.liscr.com/bfa/api"
+      : "https://localhost:7020/api",
   headers: {
     "Content-Type": "application/json",
   },

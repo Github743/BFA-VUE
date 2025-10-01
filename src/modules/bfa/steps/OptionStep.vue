@@ -84,13 +84,30 @@
           >
         </div>
         <div class="col-lg-3 fieldlist">
-          <flat-pickr
-            v-model="selectedDate"
-            :config="{ dateFormat: 'd-M-Y' }"
-            class="form-control"
-            id="enrollmentDate"
-            :disabled="readOnly"
-          />
+          <div class="input-group">
+            <!-- Flatpickr input (read-only, no auto open) -->
+            <flat-pickr
+              ref="fp"
+              v-model="selectedDate"
+              :config="config"
+              class="form-control"
+              id="enrollmentDate"
+              readonly
+              :disabled="readOnly"
+            />
+
+            <!-- Calendar icon opens the picker -->
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              :disabled="readOnly"
+              @click="openCalendar"
+              aria-label="Open calendar"
+            >
+              <i class="bi bi-calendar3"></i>
+            </button>
+          </div>
+
           <div v-if="errors.enrollmentDate" class="invalid-feedback d-block">
             {{ errors.enrollmentDate }}
           </div>

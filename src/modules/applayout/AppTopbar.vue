@@ -3,12 +3,13 @@
     class="topbar bg-white shadow-sm d-flex justify-content-between align-items-center px-3"
   >
     <div class="d-flex align-items-center">
-      <a href="/">
+      <a :href="routerBase">
         <img
           :src="require('@/assets/liscr_logo.png')"
           alt="Logo"
           style="max-height: 40px"
-      /></a>
+        />
+      </a>
     </div>
     <div>
       <i class="bi bi-bell me-3"></i>
@@ -20,6 +21,11 @@
 <script>
 export default {
   name: "TopBar",
+  computed: {
+    routerBase() {
+      return process.env.BASE_URL;
+    },
+  },
 };
 </script>
 

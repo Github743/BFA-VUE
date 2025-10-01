@@ -239,6 +239,7 @@ export default {
     async onSave() {
       if (this.mode === "service") {
         const bfaStore = useBfaStore();
+        console.log(bfaStore);
         const payload = {
           ProductGroupTypeId: this.selectedService.LookupId,
           WorkOrderClientAgreementId: bfaStore.workOrderClientAgreementId,

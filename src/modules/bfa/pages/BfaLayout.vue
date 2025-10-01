@@ -55,6 +55,7 @@ import { useRoute, useRouter } from "vue-router";
 
 import OptionStep from "@/modules/bfa/steps/OptionStep.vue";
 import DetailStep from "@/modules/bfa/steps/DetailStep.vue";
+import InvoiceStep from "@/modules/bfa/steps/FleetInvoice.vue";
 import FinalReview from "@/modules/bfa/steps/FinalReview.vue";
 import WorkOrderSnapshot from "@/modules/shared/components/WorkOrderSnapShot.vue";
 import { WORK_ORDER_STATUSES } from "@/constants/workOrder.js";
@@ -90,7 +91,12 @@ const steps = ref([
     hasError: false,
   },
   { label: "DOCUMENTS", path: "documents", hasError: false },
-  { label: "INVOICE", path: "invoice", hasError: false },
+  {
+    label: "INVOICE",
+    path: "invoice",
+    component: markRaw(InvoiceStep),
+    hasError: false,
+  },
   {
     label: "FINAL REVIEW",
     path: "final-review",

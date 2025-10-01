@@ -16,6 +16,11 @@ export function useOptionStep(emit) {
   const clientStore = useClientStore();
   const bfaStore = useBfaStore();
 
+  const config = {
+    allowInput: false,
+    clickOpens: false,
+  };
+
   // reactive state
   const certificateTypes = ref([]);
   const selectedDate = ref("");
@@ -25,6 +30,8 @@ export function useOptionStep(emit) {
 
   // loading indicator
   const saveOption = ref(false);
+
+  const fp = ref(null);
 
   // Load options on mount
   onMounted(async () => {
@@ -41,7 +48,6 @@ export function useOptionStep(emit) {
         agreementText.value = res.agreementText || "";
         bfaStore.setSystemDiscountScheduleName(res.systemDiscountScheduleName);
         bfaStore.setWorkOrderClientAgreementId(res.workOrderClientAgreementId);
-        console.log(res.systemDiscountScheduleName);
       }
     } catch (err) {
       showToast("Invalid workorder id", "danger");
@@ -64,6 +70,17 @@ export function useOptionStep(emit) {
     const hasErr = !!(errors.value.certificate || errors.value.enrollmentDate);
     emit(hasErr ? "validationFailed" : "validationCleared");
     return !hasErr;
+  }
+
+  function openCalendar() {
+    const inst = fp.value?.fp || fp.value;
+    if (inst && typeof inst.open === "function") {
+      inst.open();
+    } else {
+      // fallback: focus the input (some wrappers need focus to initialize)
+      const el = document.getElementById("enrollmentDate");
+      if (el) el.focus();
+    }
   }
 
   async function doSaveOptions(goNextAfter = false) {
@@ -124,6 +141,9 @@ export function useOptionStep(emit) {
     agreementText,
     errors,
     saveOption,
+    fp,
+    openCalendar,
+    config,
     goNext,
     saveOptions,
     validate,

@@ -58,31 +58,8 @@
 
       <!-- Vessels -->
       <div v-show="activeTab === 'vessels'">
-        <div v-if="loadingVessels">Loading vessels...</div>
-        <div v-else-if="vesselsError" class="text-danger">
-          {{ vesselsError }}
-        </div>
-        <div v-else>
-          <p v-if="!vessels || !vessels.length" class="text-muted">
-            No vessels found.
-          </p>
-          <table v-else class="table table-sm">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>IMO / Reg</th>
-                <th>Flag</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="v in vessels" :key="v.id ?? v.vesselId ?? v.imo">
-                <td>{{ v.name ?? v.vesselName ?? "—" }}</td>
-                <td>{{ v.imo ?? v.registration ?? "—" }}</td>
-                <td>{{ v.flag ?? "—" }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <!-- <div v-if="loadingVessels">Loading vessels...</div>
+        <FleetInvoice v-if="activeTab === 'vessels'" /> -->
       </div>
     </div>
   </div>
@@ -94,6 +71,10 @@ import BfaProductGrid from "@/modules/shared/components/ClientAgreement/BfaProdu
 import AdditionalDiscount from "@/modules/shared/components/ClientAgreement/AdditionalDiscountGrid.vue";
 
 import { useDetailStep } from "@/modules/bfa/steps/DetailStep";
+
+// const FleetInvoice = defineAsyncComponent(() =>
+//   import("@/modules/bfa/steps/FleetInvoice.vue")
+// );
 
 export default {
   name: "DetailStep",

@@ -43,6 +43,7 @@ import { fetchCustomers } from "@/modules/customer/customerApi";
 import { createWorkOrder } from "@/modules/workorder/workorderApi";
 import { showToast } from "@/modules/shared/utils/toast.js";
 import LoadingOverlay from "../shared/components/LoadingOverlay.vue";
+import { CLIENT_ROLES } from "@/constants/bfaConstant.js";
 
 const router = useRouter();
 const selectedClient = ref(null);
@@ -102,26 +103,51 @@ const handleClientSelected = async (client) => {
     creatingWorkOrder.value = true;
     clientStore.setClient(client);
     selectedClient.value = client;
+    const roles = selectedClient.value.clientRoles ?? "";
+    const normalizedRoles = roles.split(",").map((v) => v.trim().toLowerCase());
 
-    const payload = {
-      entities: [{ clientId: client.clientId ?? client.id }],
-    };
+    const hasBfaRole = normalizedRoles.includes(
+      CLIENT_ROLES.CLIENT_ROLE_BFA.toLowerCase()
+    );
 
-    const created = await createWorkOrder(payload);
+    const hasOwningGroupRole = normalizedRoles.includes(
+      CLIENT_ROLES.CLIENT_ROLE_OWNING_GROUP.toLowerCase()
+    );
 
-    const workOrderId = String(created.workOrderId);
-
-    if (!workOrderId || workOrderId === "0") {
-      throw new Error(
-        "Could not determine created work order id from response."
+    if (hasBfaRole) {
+      showToast(
+        "This client is already enrolled in BFA program. Please proceed with Amend.",
+        "warning",
+        "Warning",
+        true,
+        5000
       );
+      return;
     }
 
-    showToast("Work order created successfully.", "success");
-    await router.push({
-      name: "BfaStepper",
-      params: { step: "options", workOrderId: workOrderId },
-    });
+    if (!hasOwningGroupRole) {
+      const payload = {
+        entities: [{ clientId: client.clientId ?? client.id }],
+      };
+      payload.clientId = client.clientId;
+      payload.clientNumber = client.clientNumber;
+
+      const created = await createWorkOrder(payload);
+
+      const workOrderId = String(created.workOrderId);
+
+      if (!workOrderId || workOrderId === "0") {
+        throw new Error(
+          "Could not determine created work order id from response."
+        );
+      }
+
+      showToast("Work order created successfully.", "success");
+      await router.push({
+        name: "BfaStepper",
+        params: { step: "options", workOrderId: workOrderId },
+      });
+    }
   } catch (err) {
     const serverMsg = err?.response?.data?.message || err?.message;
     showToast(serverMsg || "Something went wrong! Please try again.", "danger");

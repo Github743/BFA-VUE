@@ -14,7 +14,7 @@ const ProductsService = {
   },
 
   getAdditionalDiscountedProducts: async (workOrderId) => {
-    return await get("/GetAdditionalDiscountedProducts", { workOrderId });
+    return await get("/AdditionalDiscountedProducts", { workOrderId });
   },
 
   getDiscountTypes: async () => {
@@ -29,6 +29,14 @@ const ProductsService = {
     return await get("/systemproducts-discountbyname", {
       systemProductName: productName,
     });
+  },
+
+  getFleetInvoices: async (workOrderId) => {
+    return await get("/fleetInvoices", { workOrderId });
+  },
+
+  getInvoiceCharges: async (workOrderInvoiceId) => {
+    return await get("/woInvoiceItems", { workOrderInvoiceId });
   },
 
   saveEntityProducts: async (items, workOrderId, systemDiscountScheduleId) => {

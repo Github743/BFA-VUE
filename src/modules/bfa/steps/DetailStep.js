@@ -64,28 +64,13 @@ export function useDetailStep() {
   //   }
   // }
 
-  async function loadVesselsIfNeeded() {
-    if (vessels.value !== null) return;
-    if (!workOrderId.value) return;
-    loadingVessels.value = true;
-    vesselsError.value = null;
-    try {
-      const v = await get(`workorder/${workOrderId.value}/vessels`);
-      vessels.value = Array.isArray(v) ? v : [];
-    } catch (err) {
-      vesselsError.value = err?.message || "Failed to load vessels";
-    } finally {
-      loadingVessels.value = false;
-    }
-  }
-
   // --- Tab management ---
   function setTab(tab) {
     activeTab.value = tab;
     if (tab === "additionalDiscount") {
       //loadAdditionalIfNeeded();
     } else if (tab === "vessels") {
-      loadVesselsIfNeeded();
+      //loadVesselsIfNeeded();
     }
   }
 

@@ -1,46 +1,39 @@
-import axios from "axios";
+import { get, post } from "@/modules/shared/api/http";
 import { showToast } from "@/modules/shared/utils/toast.js";
 
 export async function createWorkOrder(payload) {
   try {
-    const url = "https://archerfish-dev.liscr.com/bfa/api/createwo";
-    const res = await axios.post(url, payload);
-    return res.data;
+    return await post("/createwo", payload);
   } catch (err) {
     console.error("createWorkOrder failed:", err);
     throw err;
   }
 }
 
-export async function searchWorkOrders(payload) {
+export async function validateWorkOrder(creationData) {
   try {
-    const url = "https://archerfish-dev.liscr.com/bfa/api/searchwo";
+    const message = await post("/workorderPrevalidations", creationData);
 
-    const res = await axios.post(url, payload, {
-      headers: { "Content-Type": "application/json" },
-    });
-    return res.data;
-  } catch (err) {
-    if (err?.response) {
-      console.error(
-        "searchWorkOrders server error:",
-        err.response.status,
-        err.response.data
-      );
-    } else if (err?.request) {
-      console.error("searchWorkOrders no response (request):", err.request);
-    } else {
-      console.error("searchWorkOrders error:", err.message);
+    if (message) {
+      showToast(message, "warning", "Warning", true, 5000);
+      return false;
     }
-    throw err;
+
+    return true;
+  } catch (error) {
+    console.error("validateWorkOrder failed:", error);
+    showToast("Something went wrong while validating work order.", "error");
+    return false;
   }
 }
 
+export async function searchWorkOrders(payload) {
+  // http.post already sets JSON headers from http.js, and returns res.data
+  return await post("/searchwo", payload);
+}
+
 export async function getOptionsForWorkOrder(workOrderId) {
-  const res = await axios.get(
-    `https://archerfish-dev.liscr.com/bfa/api/${workOrderId}/options`
-  );
-  return res.data;
+  return await get(`/${workOrderId}/options`);
 }
 
 export function mapApiToCertificateTypes(api) {
@@ -63,14 +56,20 @@ export function mapCertificateTypesToApi(certificateArray) {
 
 export async function saveOptionsForWorkOrder(workOrderId, options) {
   try {
-    const url = `https://archerfish-dev.liscr.com/bfa/api/${workOrderId}/options`;
-    const res = await axios.post(url, options);
-    console.log(res.data);
-    if (res.data.success) {
+    const res = await post(`/${workOrderId}/options`, options);
+
+    // res is whatever the API returns; original code expected res.data.success
+    if (res?.success) {
       showToast("Options saved successfully", "success");
+    } else {
+      // optional: show API-provided message if present
+      if (res?.message) showToast(res.message, "warning");
     }
-    return res.data;
+
+    return res;
   } catch (err) {
+    console.error("saveOptionsForWorkOrder failed:", err);
     showToast("Error saving options", "danger");
+    throw err; // rethrow so caller can react if needed
   }
 }
