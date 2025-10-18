@@ -55,7 +55,6 @@ import { useRoute, useRouter } from "vue-router";
 
 import OptionStep from "@/modules/bfa/steps/OptionStep.vue";
 import DetailStep from "@/modules/bfa/steps/DetailStep.vue";
-import DocumentsStep from "@/modules/bfa/steps/DocumentsStep.vue"; 
 import InvoiceStep from "@/modules/bfa/steps/FleetInvoice.vue";
 import FinalReview from "@/modules/bfa/steps/FinalReview.vue";
 import WorkOrderSnapshot from "@/modules/shared/components/WorkOrderSnapShot.vue";
@@ -79,37 +78,32 @@ function onWorkOrderFilled(wo) {
 
 /* steps list - include FinalReview component */
 const steps = ref([
-    {
-        label: "OPTIONS",
-        path: "options",
-        component: markRaw(OptionStep),
-        hasError: false,
-    },
-    {
-        label: "DETAILS",
-        path: "details",
-        component: markRaw(DetailStep),
-        hasError: false,
-    },
-    {
-        label: "DOCUMENTS",
-        path: "documents",
-        component: markRaw(DocumentsStep),
-        hasError: false
-    },
-    {
-        label: "INVOICE",
-        path: "invoice",
-        component: markRaw(InvoiceStep),
-        hasError: false,
-    },
-    {
-        label: "FINAL REVIEW",
-        path: "final-review",
-        component: markRaw(FinalReview),
-        hasError: false,
-    },
-    { label: "SIGNED & RECEIVED", path: "signed-received", hasError: false },
+  {
+    label: "OPTIONS",
+    path: "options",
+    component: markRaw(OptionStep),
+    hasError: false,
+  },
+  {
+    label: "DETAILS",
+    path: "details",
+    component: markRaw(DetailStep),
+    hasError: false,
+  },
+  { label: "DOCUMENTS", path: "documents", hasError: false },
+  {
+    label: "INVOICE",
+    path: "invoice",
+    component: markRaw(InvoiceStep),
+    hasError: false,
+  },
+  {
+    label: "FINAL REVIEW",
+    path: "final-review",
+    component: markRaw(FinalReview),
+    hasError: false,
+  },
+  { label: "SIGNED & RECEIVED", path: "signed-received", hasError: false },
 ]);
 
 const currentStep = ref(route.params.step || "options");

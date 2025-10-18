@@ -247,16 +247,7 @@ export default {
         await ProductsService.saveAdditionalProduct(payload);
         console.log(this.selectedService.LookupId);
         this.$emit("saved", { type: "service", item: this.selectedService });
-      }
-      else {
-          const bfaStore = useBfaStore();
-          console.log(bfaStore);
-          const payload = {
-              SystemProductId: this.selectedProduct.systemProductId,
-              WorkOrderClientAgreementId: bfaStore.workOrderClientAgreementId,
-          };
-          await ProductsService.saveAdditionalProduct(payload);
-          console.log(this.selectedProduct.systemProductId);
+      } else {
         this.$emit("saved", { type: "product", item: this.selectedProduct });
       }
       // optionally hide modal programmatically:
