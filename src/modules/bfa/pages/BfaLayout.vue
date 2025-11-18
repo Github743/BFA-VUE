@@ -5,7 +5,8 @@
                  :key="step.path"
                  class="step"
                  :class="{
-                 active: currentStep= = =step.path,
+                 //active: currentStep= = =step.path,
+                 active: currentStep === step.path,
                  completed: i < currentIndex && !step.hasError,
           error: step.hasError,
         }"

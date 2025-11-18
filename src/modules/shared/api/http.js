@@ -11,6 +11,50 @@ const api = axios.create({
   },
 });
 
+
+// Response interceptor to unwrap ApiResponseDTO
+api.interceptors.response.use(
+  (response) => {
+    // Check if response is wrapped in ApiResponseDTO format
+    if (response.data && typeof response.data === 'object') {
+      // Check for both PascalCase (Success, Data) and camelCase (success, data)
+      const hasSuccess = 'Success' in response.data || 'success' in response.data;
+      const hasData = 'Data' in response.data || 'data' in response.data;
+      
+      if (hasSuccess && hasData) {
+        // Handle both PascalCase and camelCase
+        const success = response.data.Success ?? response.data.success;
+        const data = response.data.Data ?? response.data.data;
+        const errorMessage = response.data.ErrorMessage ?? response.data.errorMessage;
+        
+        if (success) {
+          // Unwrap successful response - extract data
+          response.data = data;
+        } else {
+          // Handle API-level failure
+          const error = new Error(errorMessage || 'API request failed');
+          error.response = response;
+          throw error;
+        }
+      }
+    }
+    return response;
+  },
+  (error) => {
+    // Handle HTTP errors
+    if (error.response && error.response.data) {
+      // If error response has ApiResponseDTO structure (both cases)
+      const errorMessage = error.response.data.ErrorMessage 
+        || error.response.data.errorMessage;
+      
+      if (errorMessage) {
+        error.message = errorMessage;
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 // GET wrapper
 export const get = async (url, params = {}) => {
   try {
@@ -55,13 +99,24 @@ export const del = async (url) => {
   }
 };
 
-// Simple centralized error handler
+// // Simple centralized error handler
+// function handleError(error) {
+//   if (error.response) {
+//     console.error("API error:", error.response.status, error.response.data);
+//   } else if (error.request) {
+//     console.error("API no response:", error.request);
+//   } else {
+//     console.error("API setup error:", error.message);
+//   }
+// }
+
+// Error handler with safe property access
 function handleError(error) {
-  if (error.response) {
-    console.error("API error:", error.response.status, error.response.data);
-  } else if (error.request) {
+  if (error?.response) {
+    console.error("API error:", error.response?.status, error.response?.data);
+  } else if (error?.request) {
     console.error("API no response:", error.request);
   } else {
-    console.error("API setup error:", error.message);
+    console.error("API setup error:", error?.message || error);
   }
 }

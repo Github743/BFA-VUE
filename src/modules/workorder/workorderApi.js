@@ -12,14 +12,37 @@ export async function createWorkOrder(payload) {
 
 export async function validateWorkOrder(creationData) {
   try {
-    const message = await post("/workorderPrevalidations", creationData);
+    // const message = await post("/workorderPrevalidations", creationData);
 
-    if (message) {
-      showToast(message, "warning", "Warning", true, 5000);
+    // if (message) {
+    //   showToast(message, "warning", "Warning", true, 5000);
+    //   return false;
+    // }
+
+    // return true;
+
+   
+    const response = await post("/workorderPrevalidations", creationData);
+    if (!response || typeof response !== "object") {
+      showToast("Invalid server response.", "error");
       return false;
     }
 
+    const { Success, ErrorMessage, Data } = response;
+    
+    if (Success === false) {
+      showToast(ErrorMessage || "Validation failed.", "warning", "Warning", true, 5000);
+      return false;
+    }
+
+    if (Success === true && Data && typeof Data === "string" && Data.trim() !== "") {
+      showToast(Data, "warning", "Warning", true, 5000);
+      return false;
+    }
+
+    
     return true;
+
   } catch (error) {
     console.error("validateWorkOrder failed:", error);
     showToast("Something went wrong while validating work order.", "error");
@@ -29,11 +52,28 @@ export async function validateWorkOrder(creationData) {
 
 export async function searchWorkOrders(payload) {
   // http.post already sets JSON headers from http.js, and returns res.data
-  return await post("/searchwo", payload);
+  // return await post("/searchwo", payload);
+
+   try {
+    console.log("searchWorkOrders payload:", payload);
+    const data = await post("/searchwo", payload);
+    console.log("searchWorkOrders response:", data);
+    return data;
+  } catch (err) {
+    console.error("searchWorkOrders error:", err.message || err);
+    throw err;
+  }
 }
 
 export async function getOptionsForWorkOrder(workOrderId) {
-  return await get(`/${workOrderId}/options`);
+  //return await get(`/${workOrderId}/options`);
+  try {
+    const options = await get(`/${workOrderId}/options`);
+    return options;
+  } catch (err) {
+    console.error("getOptionsForWorkOrder failed:", err.message || err);
+    throw err;
+  }
 }
 
 export function mapApiToCertificateTypes(api) {
@@ -68,7 +108,7 @@ export async function saveOptionsForWorkOrder(workOrderId, options) {
 
     return res;
   } catch (err) {
-    console.error("saveOptionsForWorkOrder failed:", err);
+    console.error("saveOptionsForWorkOrder failed:", err.message || err);
     showToast("Error saving options", "danger");
     throw err; // rethrow so caller can react if needed
   }
