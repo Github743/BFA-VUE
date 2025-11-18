@@ -1,8 +1,40 @@
 import { createRouter, createWebHistory } from "vue-router";
 import CustomerLayout from "@/modules/customer/CustomerLayout.vue";
 import WorkOrderSearch from "@/modules/workorder/WorkOrderSearch.vue";
+import Home from "@/modules/home/home.vue";
+import Dashboard from "@/modules/dashboard/dashboard.vue";
+import AnnualBilling from "@/modules/annualbilling/annual-billing.vue";
 
 const routes = [
+
+  {
+    path: "/",
+    name: "Home",
+    component: Home,
+    meta: { title: "Home" },
+  },
+  // Dashboard Route
+  {
+    path: "/dashboard",
+    name: "Dashboard",
+    component:Dashboard,
+    meta: { title: "Dashboard" },
+  },
+
+   {
+    path: "/annual-billing",
+    name: "AnnualBilling",
+    component:AnnualBilling,
+    meta: { title: "Annual Billing" },
+  },
+  // BFA Routes
+  {
+    path: "/agreements",
+    name: "Agreement",
+    component: CustomerLayout,
+    meta: { title: "Agreement" },
+    props: { nextLayout: "bfa" },
+  },
   {
     path: "/agreements/issue",
     name: "IssueBlockFeeAgreement",
