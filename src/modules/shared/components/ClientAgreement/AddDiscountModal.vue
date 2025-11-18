@@ -61,20 +61,26 @@
                 <tbody>
                   <tr v-for="(p, idx) in scheduleProducts" :key="idx">
                     <td>{{ p.systemProductName }}</td>
-                    <select
-                      v-model="p.discountType"
-                      class="form-select form-select-sm"
-                      :disabled="saving || readOnly || !discountTypes.length"
-                    >
-                      <option disabled value="">-- Select --</option>
-                      <option
-                        v-for="dt in discountTypes"
-                        :key="dt.code ?? dt.id ?? dt.value"
-                        :value="dt.code ?? dt.id ?? dt.value"
+                    <td>
+
+                      
+                    </td>
+                    <td>
+                      <select
+                        v-model="p.discountType"
+                        class="form-select form-select-sm"
+                        :disabled="saving || readOnly || !discountTypes.length"
                       >
-                        {{ dt.name ?? dt.label ?? dt.text }}
-                      </option>
-                    </select>
+                        <option disabled value="">-- Select --</option>
+                        <option
+                          v-for="dt in discountTypes"
+                          :key="dt.code ?? dt.id ?? dt.value"
+                          :value="dt.code ?? dt.id ?? dt.value"
+                        >
+                          {{ dt.name ?? dt.label ?? dt.text }}
+                        </option>
+                      </select>
+                    </td>
                     <td>
                       <input
                         type="number"
