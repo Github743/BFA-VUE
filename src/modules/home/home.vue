@@ -1,204 +1,200 @@
 <template>
-<div class="home_warpper1">
-    <div class="home_bg_panle">
-        <div class="home_bg_h1">Welcome to BFA Portal</div>
+   <div class="hero-section">
+        <h1 class="hero-title">Welcome to BFA Portal</h1>
     </div>
-    <div class="home_bg_h2">This portal provides access to the following functionalities :</div>
-
-    <div class="main_home_warpper">
-    <div class="home_warpper">
-        <div class="home_box1">
-            <div class="home_lable_h1">DASHBOARD</div>
-            <div class="home_lable_h2">This portal provides access to the following functionalities</div>
-            <div class="home_btn">
-                <a class="btn_primary_1" >
-                    Add Discount 
-                    <span class="material-symbols-outlined btn_primary_1_icon">
-                        arrow_right_alt
-                    </span>
-                </a>
+    
+    <div class="content-section">
+        <div class="intro-text">
+            <p>This portal provides access to the following functionalities:</p>
+        </div>
+        
+        <div class="cards-container">
+            <div class="feature-card">
+                <h3>Dashboard</h3>
+                <p>This portal provides access to the following functionalities:</p>
+                <a href="#" class="btn-add-discount">Add Discount</a>
+            </div>
+            
+            <div class="feature-card">
+                <h3>Agreements</h3>
+                <p>This portal provides access to the following functionalities:</p>
+                <a href="#" class="btn-add-discount">Add Discount</a>
+            </div>
+            
+            <div class="feature-card">
+                <h3>Annual Billing</h3>
+                <p>This portal provides access to the following functionalities:</p>
+                <a href="#" class="btn-add-discount">Add Discount</a>
+            </div>
+            
+            <div class="feature-card">
+                <h3>Reports</h3>
+                <p>This portal provides access to the following functionalities:</p>
+                <a href="#" class="btn-add-discount">Add Discount</a>
             </div>
         </div>
-
-
-        <div class="home_box2">
-            <div class="home_lable_h1">BFA</div>
-            <div class="home_lable_h2">This portal provides access to the following functionalities</div>
-            <div class="home_btn">
-                <a class="btn_primary_1" >
-                    Add Discount 
-                    <span class="material-symbols-outlined btn_primary_1_icon">
-                        arrow_right_alt
-                    </span>
-                </a>
-                </div>
-        </div>
-
-
-        <div class="home_box1">
-            <div class="home_lable_h1">ANNUAL BILLING</div>
-            <div class="home_lable_h2">This portal provides access to the following functionalities</div>
-            <div class="home_btn">
-                <a class="btn_primary_1" >
-                    Add Discount 
-                    <span class="material-symbols-outlined btn_primary_1_icon">
-                        arrow_right_alt
-                    </span>
-                </a>
-                </div>
-        </div>
-
-
-        <div class="home_box2">
-            <div class="home_lable_h1">REPORT</div>
-            <div class="home_lable_h2">This portal provides access to the following functionalities</div>
-            <div class="home_btn">
-                <a class="btn_primary_1" >
-                    Add Discount 
-                    <span class="material-symbols-outlined btn_primary_1_icon">
-                        arrow_right_alt
-                    </span>
-                </a>
-                </div>
-        </div>
-
-         
-
     </div>
-    </div>
-</div>
-
 </template>
 <script>
 export default {
   name: 'HomeView' // <-- Multi-word name to satisfy vue/multi-word-component-names
 }
 </script>
-<style scoped>  
-.main_home_warpper {
-    width: 100%;
-    float: left;
-    /* margin-bottom: 100px; */
-}
-.home_bg_panle {
-    /* background-image: url(../Image/registration_banner.jpg);*/
-    background-image: url(https://www.liscr.com/LISCR/media/Resources/Pages/maritime_v1/maritime_body_bg.jpg);
-    background-size: cover;
-    background-position: 100% 20%;
-    max-height: 350px;
-    height: 350px;
-    background-repeat: no-repeat;
-}
-.home_bg_h1 {
-    text-align: center;
-    font-size: 48px;
-    color: #fff;
-    padding-top: 100px;
-    width: 620px;
-    margin: auto;
-    font-weight: 500;
-    line-height: 65px;
-}
-.home_bg_h2 {
-    text-align: center;
-    font-size: 18px;
-    padding: 40px 0px;
-    text-transform: capitalize;
-}
-.home_warpper {
-    width: 100%;
-    margin: auto;
-    max-width: 1680px;
-}
-.home_box1 {
-    width: 24%;
-    float: left;
-    border-right: 0px solid #f2f2f2;
-    height: 300px;
-    padding: 63px 21px;
-    background: #fafafa;
-    text-align: center;
-/*    box-shadow: 8px 2px 12px 1px #ccc;*/
-}
-.Collections_bg {
-    background: #fff;
-}
-.home_box2 {
-    width: 24%;
-    float: left;
-    border-right: 0px solid #f2f2f2;
-    height: 300px;
-    padding: 63px 21px;
-    background: #fff;
-    text-align: center;
-}
-.home_lable_h1 {
-    color: #00B0C6;
-    font-size: 20px;
-    font-weight: 600;
-    padding: 0px 0px 8px;
-}
-.home_lable_h2 {
-    color: #4d4d4d;
-    font-size: 16px;
-    font-weight: 400;
-    padding: 0px 0px 8px;
-    height: 105px;
-}
-.home_btn {
-    position: relative;
-}
-
-.btn_primary_1 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
-    text-decoration: none;
-    cursor: pointer;
-    border: 1px solid #00B0C6;
-    border-radius: 60px;
-    height: 2.8em;
-    width: 173px;
-    padding: 0;
-    outline: none;
-    overflow: hidden;
-    /* color: #00B0C6; */
-    color:black;
-    transition: color 0.3s 0.1s ease-out;
-    text-align: center;
-    line-height: 250%;
-    z-index: 9;
-}
-    .btn_primary_1::before {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        margin: auto;
-        content: "";
-        border-radius: 50%;
-        display: block;
-        width: 20em;
-        height: 20em;
-        line-height: 20em;
-        left: -5em;
-        text-align: center;
-        transition: box-shadow 0.5s ease-out;
-        z-index: -1;
-    }
-    .btn_primary_1:hover {
-        color: #fff !important;
-    }
-        .btn_primary_1:hover::before {
-            box-shadow: inset 0 0 0 10em #00B0C6;
+ <style scoped>
+      
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
         }
-
-.btn_primary_1_icon {
-    padding: 9px 12px 0px 0px;
-    float: right;
-}
-</style>
+        
+        .hero-section {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            background-image: url('https://www.liscr.com/LISCR/media/Resources/Pages/maritime_v1/maritime_body_bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(12, 74, 110, 0.5);
+        }
+        
+        .ship-image {
+            position: absolute;
+            top: 50%;
+            right: 10%;
+            transform: translateY(-50%);
+            width: 400px;
+            height: auto;
+            opacity: 0.9;
+        }
+        
+        .hero-title {
+            position: relative;
+            z-index: 10;
+            color: white;
+            font-size: 36px;
+            font-weight: 600;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .content-section {
+            max-width: 1400px;
+            margin: -50px auto 50px;
+            padding: 0 20px;
+            position: relative;
+            z-index: 20;
+        }
+        
+        .intro-text {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+        
+        .intro-text p {
+            color: #6c757d;
+            margin: 0;
+            font-size: 16px;
+        }
+        
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 35px 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .feature-card h3 {
+            color: #0c4a6e;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .feature-card p {
+            color: #6c757d;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            min-height: 60px;
+        }
+        
+        .btn-add-discount {
+            background: white;
+            color: #0c4a6e;
+            border: 2px solid #0c4a6e;
+            padding: 10px 30px;
+            border-radius: 25px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-add-discount:hover {
+            background: #0c4a6e;
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        @media (max-width: 1200px) {
+            .cards-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                height: 250px;
+            }
+            
+            .hero-title {
+                font-size: 28px;
+            }
+            
+            .ship-image {
+                width: 250px;
+                right: 5%;
+            }
+            
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
