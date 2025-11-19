@@ -1,6 +1,6 @@
 <template>
-    <div class="page-container">
-        <h1 class="page-title">Annual Billing</h1>
+    <div class="page-container" >
+        <h1 class="page-title" style="margin-top: 30px;">Annual Billing</h1>
         
         <div class="tabs-container">
             <button class="tab-btn active">Annual Billing</button>
@@ -88,7 +88,7 @@
         }
         
         .page-container {
-            padding: 30px;
+            padding: 20px;
             max-width: 1600px;
             margin: 0 auto;
         }

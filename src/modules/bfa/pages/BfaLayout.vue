@@ -1,5 +1,5 @@
 <template>
-    <div class="container py-4" style="margin-left: -28px">
+    <div class="container py-4" style="margin-left: -28px; ">
         <div class="stepper mb-4">
             <div v-for="(step, i) in steps"
                  :key="step.path"

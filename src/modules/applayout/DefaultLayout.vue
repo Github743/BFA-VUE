@@ -7,10 +7,14 @@
        <Sidebar v-if="showSidebar" :is-collapsed="isCollapsed" />
 
       <!-- <main class="content flex-grow-1" :class="{ collapsed: isCollapsed }"> -->
-    <main
-        class="content flex-grow-1"
-        :class="{ collapsed: isCollapsed && showSidebar }"
-        :style="contentStyle"
+    <main 
+        :class="{
+          content: showSidebar,   /* apply only when true */
+          'flex-grow-1': true,
+          'mt-90': !showSidebar
+              /* always applied */
+        }"  
+      
       >
         <div class="content-inner">
           <RouterView :key="$route.fullPath" />
@@ -18,7 +22,7 @@
       </main>
     </div>
 
-    <AppFooter :is-collapsed="isCollapsed" />
+    <AppFooter  />
 
     <div
       class="toast-container position-fixed top-0 end-0 p-3"
@@ -46,20 +50,7 @@ const showSidebar = computed(() =>
   route.path.startsWith("/bfa") || route.path.startsWith("/agreements")
 );
 
-// compute left margin depending on whether the sidebar is shown and collapsed
-const contentStyle = computed(() => {
-  if (!showSidebar.value) {
-    return {
-      marginLeft: "0px",
-      transition: "margin-left 200ms ease"
-    };
-  }
-  // sidebar is shown
-  return {
-    marginLeft: isCollapsed.value ? "70px" : "280px",
-    transition: "margin-left 200ms ease"
-  };
-});
+
 </script>
 
 <style scoped>
@@ -90,5 +81,9 @@ const contentStyle = computed(() => {
 .content-inner {
   padding: 1rem;
   margin-top: -4%;
+}
+
+.mt-90 {
+  margin-top: 90px;
 }
 </style>

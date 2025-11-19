@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-container">
-        <h1 class="page-title">Block Fee Agreement Management</h1>
+        <h1 class="page-title" style="margin-top: 30px;">Block Fee Agreement Management</h1>
         
         <div class="row g-4">
             <div class="col-12 col-sm-6 col-lg-4 col-xl">
@@ -133,7 +133,7 @@ export default {
  <style scoped>
         
         .dashboard-container {
-            padding: 30px;
+            padding: 10px;
             max-width: 1400px;
             margin: 0 auto;
         }

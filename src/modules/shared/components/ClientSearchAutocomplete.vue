@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column align-items-center justify-content-center">
+  <div class="d-flex flex-column align-items-center justify-content-center" >
     <h4 class="text-danger fw-bold mb-3">{{ $route.meta.title }}</h4>
     <h5 class="text-primary mb-4">Search for a Client Name or Number below.</h5>
 
